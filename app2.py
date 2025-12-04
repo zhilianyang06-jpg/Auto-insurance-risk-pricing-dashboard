@@ -905,11 +905,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-pdf_bytes = build_methodology_pdf()
+# =============================
+# Section 5: PDF Download (Fixed Version)
+# =============================
+st.markdown("---")
+st.markdown("### 📄 Download Full Methodology & References (PDF)")
 
-st.download_button(
-    label="📄 Download Full Methodology & References (PDF)",
-    data=pdf_bytes,
-    file_name="Methodology_References.pdf",
-    mime="application/pdf"
-)
+try:
+    with open("Methodology_References.pdf", "rb") as pdf_file:
+        st.download_button(
+            label="⬇️ Download Methodology PDF",
+            data=pdf_file,
+            file_name="Methodology_References.pdf",
+            mime="application/pdf"
+        )
+except FileNotFoundError:
+    st.error("Methodology_References.pdf not found. Please upload it to the GitHub repository root directory.")
