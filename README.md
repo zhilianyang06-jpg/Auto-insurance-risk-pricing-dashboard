@@ -84,7 +84,7 @@ Pricing logic includes:
 Full methodology is available as a downloadable PDF within the dashboard.
 
 
-## 📦 Project Structure
+#### 📦 Project Structure
 
 ```
 insurance-pricing-dashboard/
@@ -94,14 +94,14 @@ insurance-pricing-dashboard/
 ```
 
 
-## ▶️ Running Locally
+#### ▶️ Running Locally
 
 ```bash
 pip install -r requirements.txt
 streamlit run app2.py
 ```
 
-## ☁️ Deployment (Streamlit Cloud)
+#### ☁️ Deployment (Streamlit Cloud)
 
 1. Push this repo to GitHub  
 2. Visit https://share.streamlit.io  
@@ -117,7 +117,7 @@ app2.py
 
 The application will build automatically using `requirements.txt`.
 
-## 📄 Methodology PDF
+#### 📄 Methodology PDF
 
 The dashboard automatically generates a full professional PDF including:
 
