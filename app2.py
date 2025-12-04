@@ -21,7 +21,7 @@ import plotly.graph_objects as go
 #  CONFIG & DATA PREP
 # =============================
 
-TRAIN_DATA_PATH = "20240208_120000_vld (1).csv"
+TRAIN_DATA_PATH = "train_data.csv"
 
 FEATURES = [
     "observation_hour", "speed", "rpm", "acceleration", "throttle_position",
