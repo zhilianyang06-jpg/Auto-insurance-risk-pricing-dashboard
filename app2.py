@@ -640,6 +640,7 @@ a 1% increase in price is expected to reduce acceptance by approximately <strong
 <br>Customers leave when price rises beyond their willingness to pay, and new customers join when lower prices make the policy more attractive.
 <br>Low-risk drivers are generally more price-sensitive (high elasticity), while high-risk drivers tend to be less sensitive (low elasticity). 
 <br>These behavioral shifts are reflected through changes in each segment’s acceptance rate.
+<br><br>
 </em>
 </span>
 """, unsafe_allow_html=True)
