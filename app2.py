@@ -570,7 +570,7 @@ st.markdown("""
 <span style="color:#475569; font-size:0.85rem;">
 <em>
 Under each pricing business strategy, users can customize discounts or surcharges</strong> for each risk group. 
-Noted: These variables represent business levers, not model parameters.
+<br>Noted: These variables represent business levers, not model parameters.
 <br>Insurers differ in their risk appetite, regulatory constraints, target market, and pricing strategy.
 <be>For these reasons, the dashboard treats these inputs as insurer choices rather than fixed backend calculations.
 </em>
