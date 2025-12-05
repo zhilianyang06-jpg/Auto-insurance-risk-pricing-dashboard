@@ -554,7 +554,8 @@ real market responses.
 <br>
 - Users can <strong>modify the price elasticity</strong> for each risk level using the sliders.  
 <br>
-- By combining strategy adjustments with elasticity, nsurers can simulate the actual revenue under realistic market conditions.
+- By combining strategy adjustments with elasticity, nsurers can simulate the actual revenue under realistic market conditions. 
+- The purpose of the simulation is to show how strategic choices interact with telematics risk segmentation to drive volume and revenue.
 </em>
 </span>
 <br><br>
@@ -569,6 +570,9 @@ st.markdown("""
 <span style="color:#475569; font-size:0.85rem;">
 <em>
 Under each pricing business strategy, users can customize discounts or surcharges</strong> for each risk group. 
+Noted: These variables represent business levers, not model parameters.
+<br>Insurers differ in their risk appetite, regulatory constraints, target market, and pricing strategy.
+<be>For these reasons, the dashboard treats these inputs as insurer choices rather than fixed backend calculations.
 </em>
 </span>
 <br><br>
@@ -633,6 +637,9 @@ st.markdown("""
 Elasticity reflects how sensitive customers are to price changes.  
 <br>For example, <strong>E (Low Risk) = -1.8</strong> means that for low-risk customers, 
 a 1% increase in price is expected to reduce acceptance by approximately <strong>1.8%</strong>.
+<br>Customers leave when price rises beyond their willingness to pay, and new customers join when lower prices make the policy more attractive.
+<br>Low-risk drivers are generally more price-sensitive (high elasticity), while high-risk drivers tend to be less sensitive (low elasticity). 
+<br>These behavioral shifts are reflected through changes in each segment’s acceptance rate.
 </em>
 </span>
 """, unsafe_allow_html=True)
@@ -904,12 +911,7 @@ st.markdown(
     "<span style='color:#475569; font-size:0.9rem;'>Download the full technical documentation including workflow, algorithms, formulas, and academic references.</span>",
     unsafe_allow_html=True
 )
-
-# =============================
-# Section 5: PDF Download (Fixed Version)
-# =============================
-st.markdown("---")
-st.markdown("### 📄 Download Full Methodology & References (PDF)")
+st.markdown("##### 📄 Download Full Methodology & References (PDF)")
 
 try:
     with open("Methodology_References.pdf", "rb") as pdf_file:
