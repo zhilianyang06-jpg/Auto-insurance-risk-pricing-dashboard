@@ -877,7 +877,7 @@ with right_col:
 # 2.5 Revenue & Customer Impact (vs Baseline) - PRO VIEW
 # ----------------------------------------------------------
 
-st.markdown("### Revenue and Customer Uplift Relative to Baseline")
+st.markdown("#### Revenue and Customer Uplift Relative to Baseline")
 
 # Calculate %
 rev_pct = (total_dyn_rev - total_base_rev) / total_base_rev if total_base_rev else 0
