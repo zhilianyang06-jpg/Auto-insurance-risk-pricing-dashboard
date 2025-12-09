@@ -535,9 +535,28 @@ with st.container():
         st.markdown("<br>", unsafe_allow_html=True)
         
         # Data Table
+        units = {
+            "speed": "km/h",
+            "rpm": "rpm",
+            "acceleration": "m/s²",
+            "throttle_position": "%",
+            "engine_temperature": "°C",
+            "engine_load_value": "%",
+            "heart_rate": "bpm",
+            "visibility": "km",
+            "precipitation": "mm",
+            "accidents_onsite": "number",
+            "design_speed": "km/h",
+            "accidents_time": "number"
+        }
+        
+        df_show = df_norm.copy()
+        df_show = df_show.rename(columns={col: f"{col} ({unit})" for col, unit in units.items()})
+
         st.markdown("##### Uploaded Data Preview")
         cols = ["risk", "risk_level_num"] + [c for c in df_norm.columns if c not in ["risk", "risk_level_num", "risk_text"]]
-        st.dataframe(df_norm[cols].head(6), use_container_width=True, hide_index=True)
+        st.dataframe(df_show[cols].head(6), use_container_width=True, hide_index=True)
+
 
 # ==========================================
 # SECTION 2: STRATEGY-BASED RISK PRICING + ELASTICITY 
