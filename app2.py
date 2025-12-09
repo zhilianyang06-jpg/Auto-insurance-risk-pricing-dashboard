@@ -566,7 +566,7 @@ with st.container():
 # SECTION 2: STRATEGY-BASED RISK PRICING + ELASTICITY 
 # ==========================================
 
-st.markdown("## 2.Strategy-Based Risk Pricing with Elasticity")
+st.markdown("## 2.Risk-Based Pricing Strategy with Elasticity")
 
 st.markdown("""
 <span style="color:#475569; font-size:0.9rem;">
