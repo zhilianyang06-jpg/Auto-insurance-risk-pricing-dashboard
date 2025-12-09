@@ -184,7 +184,22 @@ def local_css():
         font-size: 0.75rem !important;
         line-height: 1.2 !important;
     }
+   
+    /* === Baseline Acceptance Sliders (Brown Theme) === */
+    [data-testid="stSidebar"] [data-testid="stSlider"] > div:nth-child(1) .st-bq {
+        background-color: #b08968 !important;   /* track filled */
+    }
+    
+    [data-testid="stSidebar"] [data-testid="stSlider"] > div:nth-child(1) .st-bw {
+        background-color: #e6ccb2 !important;   /* track background */
+    }
+    
+    [data-testid="stSidebar"] [data-testid="stSlider"] span[data-baseweb="slider"] {
+        background-color: #7f5539 !important;   /* thumb */
+        border: 2px solid #7f5539 !important;
+    }
 
+    
     </style>
     """, unsafe_allow_html=True)
 
@@ -818,6 +833,25 @@ with right_col:
         color_discrete_map={"Baseline": "#d1d5db", "New": "#0ea5e9"},
         title="Baseline vs New"
     )
+
+    text_positions = []
+    counts = pd.DataFrame(hist_d)["Count"].tolist()
+    threshold = max(counts) * 0.20 
+    
+    for c in counts:
+        if c < threshold:
+            text_positions.append("outside")
+        else:
+            text_positions.append("inside")
+
+    fig_h.update_traces(
+        text=counts,
+        texttemplate="%{text}",
+        textposition=text_positions,
+        textfont=dict(color="black"),  # 外部用黑字
+        insidetextanchor="middle"
+    )
+    
     fig_h.update_layout(
         bargap=0.35,
         template="plotly_white",
