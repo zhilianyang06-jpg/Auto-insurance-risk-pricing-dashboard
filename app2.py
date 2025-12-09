@@ -710,7 +710,7 @@ cust_uplift = total_dyn_cust - total_base_cust
 
 st.markdown(f"### Prediction for {main_strat.title()} Strategy")
 st.markdown("""
-<span style="color:#475569; font-size:1.85rem;">
+<span style="color:#475569; font-size:0.85rem;">
 <em>
 On left side you can change the strategy.
 </em>
