@@ -821,7 +821,7 @@ with right_col:
     fig_h.update_layout(
         bargap=0.35,
         template="plotly_white",
-        margin=dict(t=80, l=0, r=0, b=0),
+        margin=dict(t=50, l=0, r=0, b=0),
         height=240
     )
     fig_h.update_traces(texttemplate='%{y:,.0f}', textposition='inside')
