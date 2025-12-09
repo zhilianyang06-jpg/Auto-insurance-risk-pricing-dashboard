@@ -546,13 +546,13 @@ st.markdown("## 2.Strategy-Based Risk Pricing with Elasticity")
 st.markdown("""
 <span style="color:#475569; font-size:0.9rem;">
 <em>
-In this section, users can design more granular risk pricing and incorporate 
+In this section, insurers can design more granular risk pricing and incorporate 
 <strong>price elasticity (E)</strong> to estimate customer volume and revenue with 
 real market responses.
 <br>
--  Users can <strong>adjust discounts or surcharges</strong> for each risk group under the three available pricing strategies.  
+-  insurers can <strong>adjust discounts or surcharges</strong> for each risk group under the three available pricing strategies.  
 <br>
-- Users can <strong>modify the price elasticity</strong> for each risk level using the sliders.  
+- insurers can <strong>modify the price elasticity</strong> for each risk level using the sliders.  
 <br>
 - By combining strategy adjustments with elasticity, nsurers can simulate the actual revenue under realistic market conditions. 
 - The purpose of the simulation is to show how strategic choices interact with telematics risk segmentation to drive volume and revenue.
@@ -564,15 +564,13 @@ real market responses.
 # -------------------------------
 # 2.1 Strategy Pricing Panels
 # -------------------------------
-st.markdown("### Business Strategy")
+st.markdown("### Risk-based Pricing Strategy")
 
 st.markdown("""
 <span style="color:#475569; font-size:0.85rem;">
 <em>
-Under each pricing business strategy, users can customize discounts or surcharges</strong> for each risk group. 
-<br>Noted: These variables represent business levers, not model parameters.
-<br>Insurers differ in their risk appetite, regulatory constraints, target market, and pricing strategy.
-<be>For these reasons, the dashboard treats these inputs as insurer choices rather than fixed backend calculations.
+Under each pricing strategy, insurers can customize discounts or surcharges</strong> for each risk group. 
+<br>Insurers differ in their risk appetite, regulatory constraints, target market, and pricing strategy. For these reasons, the dashboard treats these inputs as insurer choices rather than fixed backend calculations.
 </em>
 </span>
 <br><br>
@@ -582,9 +580,9 @@ strategies = ["aggressive", "standard", "conservative"]
 adj_profiles = {s: {} for s in strategies}
 
 s_desc = {
-    "aggressive": "Maximizes margin per customer. Higher prices may reduce volume but increase profit per unit.",
-    "standard":   "Balances growth and profitability. Prices aligned with typical market benchmarks.",
-    "conservative": "Prioritizes market share growth. Lower prices (discounts) used to attract higher volume."
+    "aggressive": "Focuses on maximizing profit per customer. <br>Applies steep surcharges to higher-risk customers while offering limited discounts to low-risk segments.",
+    "standard":   "Aims to balance profitability and growth. <br>Uses moderate, symmetric adjustments around the base price, with mild discounts for low risk and controlled surcharges for higher risk.",
+    "conservative": "Prioritizes customer acquisition and market share.<br> Applies deeper discounts to low- and medium-risk customers and caps price increases for higher-risk segments."
 }
 
 cols = st.columns(3)
@@ -601,7 +599,7 @@ for i, strat in enumerate(strategies):
         
         h1, h2, h3 = st.columns([0.8, 1.1, 1.1])
         h1.markdown('<span class="col-header">RISK</span>', unsafe_allow_html=True)
-        h2.markdown('<span class="col-header">ADJ %</span>', unsafe_allow_html=True)
+        h2.markdown('<span class="col-header">adj%-percentage change applied to the base premium</span>', unsafe_allow_html=True)
         h3.markdown('<span class="col-header">PRICE</span>', unsafe_allow_html=True)
         
         for r in RISK_ORDER:
@@ -630,7 +628,7 @@ for i, strat in enumerate(strategies):
 # 2.2 Elasticity Sensitivity Input
 # ----------------------------------------------------------
 
-st.markdown("### Elasticity Sensitivity (E)")
+st.markdown("### Elasticity(E)")
 st.markdown("""
 <span style="color:#475569; font-size:0.85rem;">
 <em>
@@ -658,6 +656,14 @@ for i, r in enumerate(RISK_ORDER):
 # ----------------------------------------------------------
 # 2.3 Forecast for Main Strategy
 # ----------------------------------------------------------
+st.markdown("""
+<span style="color:#475569; font-size:0.85rem;">
+<em>
+On left side you can change the strategy.
+</em>
+</span>
+<br><br>
+""", unsafe_allow_html=True)
 
 # Calculate dynamic acquisition results
 acq_data = []
@@ -686,14 +692,14 @@ for r in RISK_ORDER:
 rev_uplift = total_dyn_rev - total_base_rev
 cust_uplift = total_dyn_cust - total_base_cust
 
-st.markdown(f"### Forecast: {main_strat.title()} Strategy")
+st.markdown(f"### prediction for {main_strat.title()} Strategy")
 
 m1, m2, m3 = st.columns(3)
 
 with m1:
     st.markdown(f"""
     <div class="metric-box">
-        <div class="metric-label">Actual Revenue</div>
+        <div class="metric-label">Revenue</div>
         <div class="metric-value">${total_dyn_rev:,.0f}</div>
         <div class="metric-sub">Final Revenue</div>
     </div>
@@ -724,47 +730,104 @@ with m3:
 # 2.4 Volume Shift (before vs after)
 # ----------------------------------------------------------
 
-st.markdown(f"### Customer Volume Shift: {main_strat.title()}")
+# === Combined Layout: Customer Change Pie (left) + Baseline vs New Bar (right) ===
+st.markdown(f"### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy (Baseline vs New) ")
 
-hist_d = []
-for r in RISK_ORDER:
-    pool = baseline_metrics[r]["pool"]
-    init_r = init_accept[r]
-    load = prof_m[r]
-    E = elast[r]
-    new_r = max(0.0, min(init_r * (1 + E * load), 1.0))
-    new_n = int(pool * new_r)
+left_col, right_col = st.columns([1, 1])
 
-    hist_d.append({"Risk": r, "Type": "Baseline", "Count": baseline_metrics[r]["base"]})
-    hist_d.append({"Risk": r, "Type": "New", "Count": new_n})
+# -----------------------
+# LEFT: Customer Change Pie Chart
+# -----------------------
+with left_col:
+    st.markdown("#### Customer Change Breakdown")
 
-fig_h = px.bar(
-    pd.DataFrame(hist_d),
-    x="Risk", 
-    y="Count", 
-    color="Type", 
-    barmode="group",
-    text="Count",   
-    color_discrete_map={"Baseline": "#d1d5db", "New": "#0ea5e9"},
-    title="Baseline vs New Customer Count"
-)
+    prof_m = adj_profiles[main_strat]
+    changes = {"increased": 0, "decreased": 0, "unchanged": 0}
 
-fig_h.update_traces(
-    textposition="outside",
-    texttemplate='<span style="font-size:10px">%{text:,}</span>' 
-)
+    for r in RISK_ORDER:
+        pool = baseline_metrics[r]["pool"]
+        init_r = init_accept[r]
+        load = prof_m[r]
+        E = elast[r]
 
-fig_h.update_layout(
-    template="plotly_white",
-    yaxis=dict(
-        automargin=True,
-        range=[0, max([row["Count"] for row in hist_d]) * 1.35]  
-    ),
-    margin=dict(t=60, b=40)  
-)
+        new_rate = max(0.0, min(init_r * (1 + E * load), 1.0))
+        new_n = int(pool * new_rate)
+        base_n = baseline_metrics[r]["base"]
 
-st.plotly_chart(fig_h, use_container_width=True)
+        if new_n > base_n:
+            changes["increased"] += new_n - base_n
+        elif new_n < base_n:
+            changes["decreased"] += base_n - new_n
+        else:
+            changes["unchanged"] += base_n
 
+    change_df = pd.DataFrame({
+        "type": list(changes.keys()),
+        "count": list(changes.values())
+    })
+
+    change_colors = {
+        "increased": "#34d399",
+        "decreased": "#f87171",
+        "unchanged": "#fbbf24"
+    }
+
+    fig_change = px.pie(
+        change_df,
+        names="type",
+        values="count",
+        hole=0.6,
+        title="Customer Change Distribution",
+        color="type",
+        color_discrete_map=change_colors
+    )
+
+    fig_change.update_layout(
+        margin=dict(t=40, b=0, l=0, r=0),
+        height=260,
+        template="plotly_white"
+    )
+    fig_change.update_traces(textposition="inside", textinfo="percent")
+    st.plotly_chart(fig_change, use_container_width=True)
+
+
+# -----------------------
+# RIGHT: Baseline vs New Customer Count (bar)
+# -----------------------
+with right_col:
+    st.markdown("#### Baseline vs New Customer Count")
+
+    hist_d = []
+    prof_m = adj_profiles[main_strat]
+
+    for r in RISK_ORDER:
+        pool = baseline_metrics[r]["pool"]
+        init_r = init_accept[r]
+        load = prof_m[r]
+        E = elast[r]
+        new_rate = max(0.0, min(init_r * (1 + E * load), 1.0))
+        new_n = int(pool * new_rate)
+        
+        hist_d.append({"Risk": r, "Type": "Baseline", "Count": baseline_metrics[r]["base"]})
+        hist_d.append({"Risk": r, "Type": "New", "Count": new_n})
+
+    fig_h = px.bar(
+        pd.DataFrame(hist_d),
+        x="Risk",
+        y="Count",
+        color="Type",
+        barmode="group",
+        color_discrete_map={"Baseline": "#d1d5db", "New": "#0ea5e9"},
+        title="Baseline vs New Count"
+    )
+    fig_h.update_layout(
+        bargap=0.35,
+        template="plotly_white",
+        margin=dict(t=40, l=0, r=0, b=0),
+        height=260
+    )
+    fig_h.update_traces(texttemplate='%{y:,.0f}', textposition='outside')
+    st.plotly_chart(fig_h, use_container_width=True)
 
 
 
