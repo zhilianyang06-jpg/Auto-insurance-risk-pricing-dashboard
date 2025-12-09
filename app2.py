@@ -679,35 +679,8 @@ for i, r in enumerate(RISK_ORDER):
 
 
 # ----------------------------------------------------------
-# 2.3 Forecast for Main Strategy
+# 2.3 Volume Shift (before vs after)
 # ----------------------------------------------------------
-# Calculate dynamic acquisition results
-acq_data = []
-prof_m = adj_profiles[main_strat]
-
-total_dyn_rev = 0
-total_dyn_cust = 0
-
-for r in RISK_ORDER:
-    pool_n = baseline_metrics[r]["pool"]
-    base_price = baseline_metrics[r]["price"]
-    init_rate = init_accept[r]
-    load = prof_m[r]
-    E = elast[r]
-
-    new_price = base_price * (1 + load)
-    new_rate = max(0.0, min(init_rate * (1 + E * load), 1.0))
-    
-    new_n = int(pool_n * new_rate)
-    new_rev = int(new_n * new_price)
-    
-    total_dyn_cust += new_n
-    total_dyn_rev += new_rev
-
-# Compare ONLY with Baseline
-rev_uplift = total_dyn_rev - total_base_rev
-cust_uplift = total_dyn_cust - total_base_cust
-
 st.markdown(f"### Prediction for {main_strat.title()} Strategy")
 st.markdown("""
 <span style="color:#475569; font-size:0.85rem;">
@@ -718,44 +691,10 @@ On left side you can change the strategy.
 <br><br>
 """, unsafe_allow_html=True)
 
-m1, m2, m3 = st.columns(3)
-
-with m1:
-    st.markdown(f"""
-    <div class="metric-box">
-        <div class="metric-label">Revenue</div>
-        <div class="metric-value">${total_dyn_rev:,.0f}</div>
-        <div class="metric-sub">Final Revenue</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with m2:
-    st.markdown(f"""
-    <div class="metric-box">
-        <div class="metric-label">Revenue Change (vs Baseline)</div>
-        <div class="metric-value">{rev_uplift:+,.0f}</div>
-        <div class="metric-sub">${total_base_rev:,.0f} → ${total_dyn_rev:,.0f}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with m3:
-    st.markdown(f"""
-    <div class="metric-box">
-        <div class="metric-label">Customer Change (vs Baseline)</div>
-        <div class="metric-value">{cust_uplift:+,.0f}</div>
-        <div class="metric-sub">{total_base_cust:,} → {total_dyn_cust:,}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ----------------------------------------------------------
-# 2.4 Volume Shift (before vs after)
-# ----------------------------------------------------------
-
 # === Combined Layout: Customer Change Pie (left) + Baseline vs New Bar (right) ===
 st.markdown("<div style='margin-top:18px;'></div>", unsafe_allow_html=True)
 
-st.markdown(f"#### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy (Baseline vs New) ")
+st.markdown(f"##### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy (Baseline vs New) ")
 
 left_col, right_col = st.columns([1, 1])
 
@@ -870,6 +809,66 @@ with right_col:
     fig_h.update_traces(texttemplate='%{y:,.0f}', textposition='inside')
     st.plotly_chart(fig_h, use_container_width=True)
 
+
+# ----------------------------------------------------------
+# 2.4 Forecast for Main Strategy
+# ----------------------------------------------------------
+# Calculate dynamic acquisition results
+acq_data = []
+prof_m = adj_profiles[main_strat]
+
+total_dyn_rev = 0
+total_dyn_cust = 0
+
+for r in RISK_ORDER:
+    pool_n = baseline_metrics[r]["pool"]
+    base_price = baseline_metrics[r]["price"]
+    init_rate = init_accept[r]
+    load = prof_m[r]
+    E = elast[r]
+
+    new_price = base_price * (1 + load)
+    new_rate = max(0.0, min(init_rate * (1 + E * load), 1.0))
+    
+    new_n = int(pool_n * new_rate)
+    new_rev = int(new_n * new_price)
+    
+    total_dyn_cust += new_n
+    total_dyn_rev += new_rev
+
+# Compare ONLY with Baseline
+rev_uplift = total_dyn_rev - total_base_rev
+cust_uplift = total_dyn_cust - total_base_cust
+
+
+m1, m2, m3 = st.columns(3)
+
+with m1:
+    st.markdown(f"""
+    <div class="metric-box">
+        <div class="metric-label">Revenue</div>
+        <div class="metric-value">${total_dyn_rev:,.0f}</div>
+        <div class="metric-sub">Final Revenue</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with m2:
+    st.markdown(f"""
+    <div class="metric-box">
+        <div class="metric-label">Revenue Change (vs Baseline)</div>
+        <div class="metric-value">{rev_uplift:+,.0f}</div>
+        <div class="metric-sub">${total_base_rev:,.0f} → ${total_dyn_rev:,.0f}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with m3:
+    st.markdown(f"""
+    <div class="metric-box">
+        <div class="metric-label">Customer Change (vs Baseline)</div>
+        <div class="metric-value">{cust_uplift:+,.0f}</div>
+        <div class="metric-sub">{total_base_cust:,} → {total_dyn_cust:,}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ----------------------------------------------------------
