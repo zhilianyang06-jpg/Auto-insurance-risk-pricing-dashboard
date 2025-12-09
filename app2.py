@@ -737,7 +737,7 @@ left_col, right_col = st.columns([1, 1])
 # LEFT: Customer Change Pie Chart
 # -----------------------
 with left_col:
-    st.markdown("###### Customer Change Breakdown")
+    st.markdown("###### Customer Change Distribution")
 
     prof_m = adj_profiles[main_strat]
     changes = {"increased": 0, "decreased": 0, "unchanged": 0}
@@ -821,10 +821,10 @@ with right_col:
     fig_h.update_layout(
         bargap=0.35,
         template="plotly_white",
-        margin=dict(t=40, l=0, r=0, b=0),
+        margin=dict(t=80, l=0, r=0, b=0),
         height=240
     )
-    fig_h.update_traces(texttemplate='%{y:,.0f}', textposition='outside')
+    fig_h.update_traces(texttemplate='%{y:,.0f}', textposition='inside')
     st.plotly_chart(fig_h, use_container_width=True)
 
 
