@@ -554,7 +554,11 @@ with st.container():
         df_show = df_show.rename(columns={col: f"{col} ({unit})" for col, unit in units.items()})
 
         st.markdown("##### Uploaded Data Preview")
-        cols = ["risk", "risk_level_num"] + [c for c in df_norm.columns if c not in ["risk", "risk_level_num", "risk_text"]]
+        cols = ["risk", "risk_level_num"] + [
+            c for c in df_show.columns
+            if c not in ["risk", "risk_level_num", "risk_text"]
+        ]
+
         st.dataframe(df_show[cols].head(6), use_container_width=True, hide_index=True)
 
 
