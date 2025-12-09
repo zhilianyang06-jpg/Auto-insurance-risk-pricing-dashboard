@@ -681,15 +681,6 @@ for i, r in enumerate(RISK_ORDER):
 # ----------------------------------------------------------
 # 2.3 Forecast for Main Strategy
 # ----------------------------------------------------------
-st.markdown("""
-<span style="color:#475569; font-size:0.85rem;">
-<em>
-On left side you can change the strategy.
-</em>
-</span>
-<br><br>
-""", unsafe_allow_html=True)
-
 # Calculate dynamic acquisition results
 acq_data = []
 prof_m = adj_profiles[main_strat]
@@ -718,6 +709,14 @@ rev_uplift = total_dyn_rev - total_base_rev
 cust_uplift = total_dyn_cust - total_base_cust
 
 st.markdown(f"### Prediction for {main_strat.title()} Strategy")
+st.markdown("""
+<span style="color:#475569; font-size:1.85rem;">
+<em>
+On left side you can change the strategy.
+</em>
+</span>
+<br><br>
+""", unsafe_allow_html=True)
 
 m1, m2, m3 = st.columns(3)
 
