@@ -184,20 +184,7 @@ def local_css():
         font-size: 0.75rem !important;
         line-height: 1.2 !important;
     }
-   
-    /* === Baseline Acceptance Sliders (Brown Theme) === */
-    [data-testid="stSidebar"] [data-testid="stSlider"] > div:nth-child(1) .st-bq {
-        background-color: #b08968 !important;   /* track filled */
-    }
-    
-    [data-testid="stSidebar"] [data-testid="stSlider"] > div:nth-child(1) .st-bw {
-        background-color: #e6ccb2 !important;   /* track background */
-    }
-    
-    [data-testid="stSidebar"] [data-testid="stSlider"] span[data-baseweb="slider"] {
-        background-color: #7f5539 !important;   /* thumb */
-        border: 2px solid #7f5539 !important;
-    }
+
 
     
     </style>
