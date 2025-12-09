@@ -692,7 +692,7 @@ for r in RISK_ORDER:
 rev_uplift = total_dyn_rev - total_base_rev
 cust_uplift = total_dyn_cust - total_base_cust
 
-st.markdown(f"### prediction for {main_strat.title()} Strategy")
+st.markdown(f"### Prediction for {main_strat.title()} Strategy")
 
 m1, m2, m3 = st.columns(3)
 
@@ -724,14 +724,12 @@ with m3:
     """, unsafe_allow_html=True)
 
 
-
-
 # ----------------------------------------------------------
 # 2.4 Volume Shift (before vs after)
 # ----------------------------------------------------------
 
 # === Combined Layout: Customer Change Pie (left) + Baseline vs New Bar (right) ===
-st.markdown(f"### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy (Baseline vs New) ")
+st.markdown(f"#### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy (Baseline vs New) ")
 
 left_col, right_col = st.columns([1, 1])
 
@@ -739,7 +737,7 @@ left_col, right_col = st.columns([1, 1])
 # LEFT: Customer Change Pie Chart
 # -----------------------
 with left_col:
-    st.markdown("#### Customer Change Breakdown")
+    st.markdown("###### Customer Change Breakdown")
 
     prof_m = adj_profiles[main_strat]
     changes = {"increased": 0, "decreased": 0, "unchanged": 0}
@@ -795,7 +793,7 @@ with left_col:
 # RIGHT: Baseline vs New Customer Count (bar)
 # -----------------------
 with right_col:
-    st.markdown("#### Baseline vs New Customer Count")
+    st.markdown("###### Customer Volume Shift: Baseline vs New After Pricing Change")
 
     hist_d = []
     prof_m = adj_profiles[main_strat]
@@ -818,13 +816,13 @@ with right_col:
         color="Type",
         barmode="group",
         color_discrete_map={"Baseline": "#d1d5db", "New": "#0ea5e9"},
-        title="Baseline vs New Count"
+        title="Baseline vs New"
     )
     fig_h.update_layout(
         bargap=0.35,
         template="plotly_white",
         margin=dict(t=40, l=0, r=0, b=0),
-        height=260
+        height=240
     )
     fig_h.update_traces(texttemplate='%{y:,.0f}', textposition='outside')
     st.plotly_chart(fig_h, use_container_width=True)
@@ -835,7 +833,7 @@ with right_col:
 # 2.5 Revenue & Customer Impact (vs Baseline) - PRO VIEW
 # ----------------------------------------------------------
 
-st.markdown("### Revenue & Customer Impact (vs Baseline)")
+st.markdown("### Revenue and Customer Uplift Relative to Baseline")
 
 # Calculate %
 rev_pct = (total_dyn_rev - total_base_rev) / total_base_rev if total_base_rev else 0
