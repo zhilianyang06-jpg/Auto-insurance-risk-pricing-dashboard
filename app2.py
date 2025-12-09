@@ -607,7 +607,7 @@ adj_profiles = {s: {} for s in strategies}
 s_desc = {
     "aggressive": "Focuses on maximizing profit per customer. <br>Applies steep surcharges to higher-risk customers while offering limited discounts to low-risk segments.",
     "standard":   "Aims to balance profitability and growth. <br>Uses moderate, symmetric adjustments around the base price, with mild discounts for low risk and controlled surcharges for higher risk.",
-    "conservative": "Prioritizes customer acquisition and market share.<br> Applies deeper discounts to low- and medium-risk customers and caps price increases for higher-risk segments."
+    "conservative": "Prioritizes customer acquisition.<br> Applies deeper discounts to low- and medium-risk customers and caps price increases for higher-risk segments."
 }
 
 cols = st.columns(3)
@@ -754,6 +754,8 @@ with m3:
 # ----------------------------------------------------------
 
 # === Combined Layout: Customer Change Pie (left) + Baseline vs New Bar (right) ===
+st.markdown("<div style='margin-top:18px;'></div>", unsafe_allow_html=True)
+
 st.markdown(f"#### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy (Baseline vs New) ")
 
 left_col, right_col = st.columns([1, 1])
@@ -762,7 +764,6 @@ left_col, right_col = st.columns([1, 1])
 # LEFT: Customer Change Pie Chart
 # -----------------------
 with left_col:
-    st.markdown("###### Customer Change Distribution")
 
     prof_m = adj_profiles[main_strat]
     changes = {"increased": 0, "decreased": 0, "unchanged": 0}
@@ -818,7 +819,6 @@ with left_col:
 # RIGHT: Baseline vs New Customer Count (bar)
 # -----------------------
 with right_col:
-    st.markdown("###### Customer Volume Shift: Baseline vs New After Pricing Change")
 
     hist_d = []
     prof_m = adj_profiles[main_strat]
