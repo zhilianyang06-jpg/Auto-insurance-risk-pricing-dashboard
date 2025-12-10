@@ -701,7 +701,7 @@ left_col, right_col = st.columns([1, 1])
 # ----------------------
 # LEFT: Revenue Change by Risk Level 
 # ----------------------
-
+# LEFT: Baseline vs New Revenue by Risk Level (same style as right chart, numbers outside only)
 with left_col:
 
     rev_records = []
@@ -712,7 +712,7 @@ with left_col:
         base_price = baseline_metrics[r]["price"]
         base_n = baseline_metrics[r]["base"]
 
-        # Pricing strategy and elasticity
+        # Strategy load + elasticity
         load = prof_m[r]
         E = elast[r]
         new_price = base_price * (1 + load)
@@ -724,8 +724,8 @@ with left_col:
         base_rev = base_n * base_price
         new_rev = new_n * new_price
 
-        rev_records.append({"Risk": r, "Type": "Baseline Revenue", "Revenue": base_rev})
-        rev_records.append({"Risk": r, "Type": "New Revenue", "Revenue": new_rev})
+        rev_records.append({"Risk": r, "Type": "Baseline", "Revenue": base_rev})
+        rev_records.append({"Risk": r, "Type": "New", "Revenue": new_rev})
 
     df_rev_plot = pd.DataFrame(rev_records)
 
@@ -736,34 +736,29 @@ with left_col:
         color="Type",
         barmode="group",
         color_discrete_map={
-            "Baseline Revenue": "#d1d5db",
-            "New Revenue": "#0284c7"
+            "Baseline": "#d1d5db",
+            "New": "#0284c7"
         },
-        title="Baseline vs New Revenue by Risk Level"
+        title="Baseline vs New Revenue"
     )
 
-    # Text position logic same as right-side chart
-    rev_vals = df_rev_plot["Revenue"].tolist()
-    threshold = max(rev_vals) * 0.20
-    text_positions = ["outside" if v < threshold else "inside" for v in rev_vals]
-
+    # Same rules as right-side chart, but force labels OUTSIDE only
     fig_rev_bar.update_traces(
         text=df_rev_plot["Revenue"],
         texttemplate="%{text:,.0f}",
-        textposition=text_positions,
-        textfont=dict(color="black"),
-        insidetextanchor="middle"
+        textposition="outside",      # <- always outside
+        textfont=dict(color="black")
     )
 
     fig_rev_bar.update_layout(
         bargap=0.35,
         template="plotly_white",
         margin=dict(t=30, l=0, r=0, b=0),
-        height=260
+        height=260,
+        yaxis=dict(showgrid=True, gridcolor="#f1f5f9")
     )
 
     st.plotly_chart(fig_rev_bar, use_container_width=True)
-
 
 
 # -----------------------
