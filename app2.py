@@ -684,8 +684,7 @@ for i, r in enumerate(RISK_ORDER):
 st.markdown(f"### Prediction for {main_strat.title()} Strategy")
 st.markdown("""
 <span style="color:#475569; font-size:0.85rem;">
-<em>
-On left side you can change the strategy.
+<em> On left side you can change the strategy.
 </em>
 </span>
 <br><br>
@@ -699,9 +698,8 @@ st.markdown(f"##### Impact of Pricing on Customer Volume Under {main_strat.title
 left_col, right_col = st.columns([1, 1])
 
 # ----------------------
-# LEFT: Revenue Change by Risk Level 
-# ----------------------
 # LEFT: Baseline vs New Revenue by Risk Level 
+# ----------------------
 with left_col:
 
     rev_records = []
@@ -712,7 +710,7 @@ with left_col:
         base_price = baseline_metrics[r]["price"]
         base_n = baseline_metrics[r]["base"]
 
-        # Strategy load + elasticity
+        # Strategy + elasticity
         load = prof_m[r]
         E = elast[r]
         new_price = base_price * (1 + load)
@@ -739,17 +737,20 @@ with left_col:
             "Baseline": "#d1d5db",
             "New": "#0284c7"
         },
-        title="Baseline vs {main_strat.title()} Strategy"
+        title=f"Baseline vs {main_strat.title()} Strategy: Revenue"
     )
 
-    # Same rules as right-side chart, but force labels OUTSIDE only
+    # No text labels (your requirement)
+    fig_rev_bar.update_traces(text=None)
 
     fig_rev_bar.update_layout(
         bargap=0.35,
         template="plotly_white",
         margin=dict(t=30, l=0, r=0, b=0),
         height=260,
-        yaxis=dict(showgrid=True, gridcolor="#f1f5f9")
+        yaxis=dict(showgrid=True, gridcolor="#f1f5f9"),
+        xaxis_title="Risk category",
+        yaxis_title="Revenue"
     )
 
     st.plotly_chart(fig_rev_bar, use_container_width=True)
@@ -770,45 +771,46 @@ with right_col:
         E = elast[r]
         new_rate = max(0.0, min(init_r * (1 + E * load), 1.0))
         new_n = int(pool * new_rate)
-        
+
         hist_d.append({"Risk": r, "Type": "Baseline", "Count": baseline_metrics[r]["base"]})
         hist_d.append({"Risk": r, "Type": "New", "Count": new_n})
 
+    df_hist = pd.DataFrame(hist_d)
+
     fig_h = px.bar(
-        pd.DataFrame(hist_d),
-        x="Risk Category",
-        y="Number of Accepting Customer",
+        df_hist,
+        x="Risk",
+        y="Count",
         color="Type",
         barmode="group",
-        color_discrete_map={"Baseline": "#d1d5db", "New": "#0ea5e9"},
-        title="Baseline vs {main_strat.title()} Strategy"
+        color_discrete_map={
+            "Baseline": "#d1d5db",
+            "New": "#0ea5e9"
+        },
+        title=f"Baseline vs {main_strat.title()} Strategy: Customer Volume"
     )
 
-    text_positions = []
-    counts = pd.DataFrame(hist_d)["Count"].tolist()
-    threshold = max(counts) * 0.20 
-    
-    for c in counts:
-        if c < threshold:
-            text_positions.append("outside")
-        else:
-            text_positions.append("inside")
+    # text with inside/outside logic
+    counts = df_hist["Count"].tolist()
+    threshold = max(counts) * 0.20
+    text_positions = ["outside" if c < threshold else "inside" for c in counts]
 
     fig_h.update_traces(
-        text=counts,
-        texttemplate="%{text}",
+        text=df_hist["Count"].map(lambda x: f"{x:,.0f}"),
         textposition=text_positions,
-        textfont=dict(color="black"),
-        insidetextanchor="middle"
+        insidetextanchor="middle",
+        textfont=dict(color="black")
     )
-    
+
     fig_h.update_layout(
         bargap=0.35,
         template="plotly_white",
         margin=dict(t=30, l=0, r=0, b=0),
-        height=260
+        height=260,
+        xaxis_title="Risk category",
+        yaxis_title="Number of accepting customers"
     )
-    fig_h.update_traces(texttemplate='%{y:,.0f}', textposition='inside')
+
     st.plotly_chart(fig_h, use_container_width=True)
 
 
