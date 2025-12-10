@@ -790,17 +790,6 @@ with right_col:
         title=f"Baseline vs {main_strat.title()} Strategy: Customer Volume"
     )
 
-    # text with inside/outside logic
-    counts = df_hist["Count"].tolist()
-    threshold = max(counts) * 0.20
-    text_positions = ["outside" if c < threshold else "inside" for c in counts]
-
-    fig_h.update_traces(
-        text=df_hist["Count"].map(lambda x: f"{x:,.0f}"),
-        textposition=text_positions,
-        insidetextanchor="middle",
-        textfont=dict(color="black")
-    )
 
     fig_h.update_layout(
         bargap=0.35,
