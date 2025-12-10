@@ -704,15 +704,15 @@ left_col, right_col = st.columns([1, 1])
 
 with left_col:
 
+    rev_records = []
     prof_m = adj_profiles[main_strat]
-
-    revenue_list = []
 
     for r in RISK_ORDER:
         pool = baseline_metrics[r]["pool"]
         base_price = baseline_metrics[r]["price"]
         base_n = baseline_metrics[r]["base"]
 
+        # Pricing strategy and elasticity
         load = prof_m[r]
         E = elast[r]
         new_price = base_price * (1 + load)
@@ -724,30 +724,46 @@ with left_col:
         base_rev = base_n * base_price
         new_rev = new_n * new_price
 
-        revenue_list.append({
-            "risk": r,
-            "rev_change": new_rev - base_rev
-        })
+        rev_records.append({"Risk": r, "Type": "Baseline Revenue", "Revenue": base_rev})
+        rev_records.append({"Risk": r, "Type": "New Revenue", "Revenue": new_rev})
 
-    rev_df = pd.DataFrame(revenue_list)
+    df_rev_plot = pd.DataFrame(rev_records)
 
-    fig_rev_change = px.bar(
-        rev_df,
-        x="risk",
-        y="rev_change",
-        color="rev_change",
-        color_continuous_scale="RdBu",
-        title="Revenue Change by Risk Level",
-        labels={"risk": "Risk Level", "rev_change": "Δ Revenue"}
+    fig_rev_bar = px.bar(
+        df_rev_plot,
+        x="Risk",
+        y="Revenue",
+        color="Type",
+        barmode="group",
+        color_discrete_map={
+            "Baseline Revenue": "#d1d5db",
+            "New Revenue": "#0284c7"
+        },
+        title="Baseline vs New Revenue by Risk Level"
     )
 
-    fig_rev_change.update_layout(
+    # Text position logic same as right-side chart
+    rev_vals = df_rev_plot["Revenue"].tolist()
+    threshold = max(rev_vals) * 0.20
+    text_positions = ["outside" if v < threshold else "inside" for v in rev_vals]
+
+    fig_rev_bar.update_traces(
+        text=df_rev_plot["Revenue"],
+        texttemplate="%{text:,.0f}",
+        textposition=text_positions,
+        textfont=dict(color="black"),
+        insidetextanchor="middle"
+    )
+
+    fig_rev_bar.update_layout(
+        bargap=0.35,
         template="plotly_white",
-        height=260,
-        margin=dict(t=40, l=0, r=0, b=0)
+        margin=dict(t=30, l=0, r=0, b=0),
+        height=260
     )
 
-    st.plotly_chart(fig_rev_change, use_container_width=True)
+    st.plotly_chart(fig_rev_bar, use_container_width=True)
+
 
 
 # -----------------------
