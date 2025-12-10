@@ -559,7 +559,7 @@ with st.container():
             if c not in ["risk", "risk_level_num", "risk_text"]
         ]
 
-        st.dataframe(df_show[cols].head(6),height=400,use_container_width=True, hide_index=True)
+        st.dataframe(df_show[cols].head(6),use_container_width=True, hide_index=True)
 
 
 # ==========================================
