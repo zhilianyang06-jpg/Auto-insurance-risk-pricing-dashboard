@@ -415,7 +415,7 @@ for r in RISK_ORDER:
 # -------------------------------
 st.sidebar.markdown("---")
 st.sidebar.subheader("3. Baseline Acceptance")
-st.sidebar.caption("Initial % of the pool accepting the Base Price.")
+st.sidebar.caption("acceptance percentage for different risk groups under the baseline price")
 
 init_accept = {}
 for r in RISK_ORDER:
@@ -429,7 +429,7 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("4. Strategy")
 
 main_strat = st.sidebar.selectbox(
-    "Select Pricing Strategy",
+    "Select strategy here to see the corresponding results",
     ["aggressive", "standard", "conservative"],
     index=1
 )
@@ -559,7 +559,7 @@ with st.container():
             if c not in ["risk", "risk_level_num", "risk_text"]
         ]
 
-        st.dataframe(df_show[cols].head(6), use_container_width=True, hide_index=True)
+        st.dataframe(df_show[cols].head(6),height=400,use_container_width=True, hide_index=True)
 
 
 # ==========================================
@@ -694,63 +694,60 @@ On left side you can change the strategy.
 # === Combined Layout: Customer Change Pie (left) + Baseline vs New Bar (right) ===
 st.markdown("<div style='margin-top:18px;'></div>", unsafe_allow_html=True)
 
-st.markdown(f"##### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy (Baseline vs New) ")
+st.markdown(f"##### Impact of Pricing on Customer Volume Under {main_strat.title()} Strategy ")
 
 left_col, right_col = st.columns([1, 1])
 
-# -----------------------
-# LEFT: Customer Change Pie Chart
-# -----------------------
+# ----------------------
+# LEFT: Revenue Change by Risk Level 
+# ----------------------
+
 with left_col:
 
     prof_m = adj_profiles[main_strat]
-    changes = {"increased": 0, "decreased": 0, "unchanged": 0}
+
+    revenue_list = []
 
     for r in RISK_ORDER:
         pool = baseline_metrics[r]["pool"]
-        init_r = init_accept[r]
-        load = prof_m[r]
-        E = elast[r]
-
-        new_rate = max(0.0, min(init_r * (1 + E * load), 1.0))
-        new_n = int(pool * new_rate)
+        base_price = baseline_metrics[r]["price"]
         base_n = baseline_metrics[r]["base"]
 
-        if new_n > base_n:
-            changes["increased"] += new_n - base_n
-        elif new_n < base_n:
-            changes["decreased"] += base_n - new_n
-        else:
-            changes["unchanged"] += base_n
+        load = prof_m[r]
+        E = elast[r]
+        new_price = base_price * (1 + load)
 
-    change_df = pd.DataFrame({
-        "type": list(changes.keys()),
-        "count": list(changes.values())
-    })
+        init_r = init_accept[r]
+        new_rate = max(0.0, min(init_r * (1 + E * load), 1.0))
+        new_n = int(pool * new_rate)
 
-    change_colors = {
-        "increased": "#34d399",
-        "decreased": "#f87171",
-        "unchanged": "#fbbf24"
-    }
+        base_rev = base_n * base_price
+        new_rev = new_n * new_price
 
-    fig_change = px.pie(
-        change_df,
-        names="type",
-        values="count",
-        hole=0.6,
-        title="Customer Change Distribution",
-        color="type",
-        color_discrete_map=change_colors
+        revenue_list.append({
+            "risk": r,
+            "rev_change": new_rev - base_rev
+        })
+
+    rev_df = pd.DataFrame(revenue_list)
+
+    fig_rev_change = px.bar(
+        rev_df,
+        x="risk",
+        y="rev_change",
+        color="rev_change",
+        color_continuous_scale="RdBu",
+        title="Revenue Change by Risk Level",
+        labels={"risk": "Risk Level", "rev_change": "Δ Revenue"}
     )
 
-    fig_change.update_layout(
-        margin=dict(t=40, b=0, l=0, r=0),
+    fig_rev_change.update_layout(
+        template="plotly_white",
         height=260,
-        template="plotly_white"
+        margin=dict(t=40, l=0, r=0, b=0)
     )
-    fig_change.update_traces(textposition="inside", textinfo="percent")
-    st.plotly_chart(fig_change, use_container_width=True)
+
+    st.plotly_chart(fig_rev_change, use_container_width=True)
 
 
 # -----------------------
@@ -769,8 +766,8 @@ with right_col:
         new_rate = max(0.0, min(init_r * (1 + E * load), 1.0))
         new_n = int(pool * new_rate)
         
-        hist_d.append({"Risk": r, "Type": "Baseline", "Count": baseline_metrics[r]["base"]})
-        hist_d.append({"Risk": r, "Type": "New", "Count": new_n})
+        hist_d.append({"Risk Category": r, "Type": "Baseline", "number of accepting customer": baseline_metrics[r]["base"]})
+        hist_d.append({"Risk Category": r, "Type": "New", "number of accepting customer": new_n})
 
     fig_h = px.bar(
         pd.DataFrame(hist_d),
@@ -779,7 +776,7 @@ with right_col:
         color="Type",
         barmode="group",
         color_discrete_map={"Baseline": "#d1d5db", "New": "#0ea5e9"},
-        title="Baseline vs New"
+        title="Baseline vs {main_strat.title()} Strategy"
     )
 
     text_positions = []
@@ -796,7 +793,7 @@ with right_col:
         text=counts,
         texttemplate="%{text}",
         textposition=text_positions,
-        textfont=dict(color="black"),  # 外部用黑字
+        textfont=dict(color="black"),
         insidetextanchor="middle"
     )
     
@@ -892,7 +889,7 @@ cust_pct_text = f"{cust_pct*100:+.1f}%"
 c1, c2 = st.columns(2)
 
 # ------------------------------------------
-# Revenue Card (Title + Chart together)
+# Revenue Card 
 # ------------------------------------------
 with c1:
 
@@ -1010,7 +1007,7 @@ st.download_button("Download Full Dataset (CSV)", df_out.to_csv(index=False).enc
 # SECTION 4: NOTES (METHODOLOGY)
 # ==========================================
 st.markdown("---")
-st.markdown("## 5. Methodology & References")
+st.markdown("## 4. Methodology & References")
 st.markdown(
     "<span style='color:#475569; font-size:0.9rem;'>Download the full technical documentation including workflow, algorithms, formulas, and academic references.</span>",
     unsafe_allow_html=True
