@@ -701,7 +701,7 @@ left_col, right_col = st.columns([1, 1])
 # ----------------------
 # LEFT: Revenue Change by Risk Level 
 # ----------------------
-# LEFT: Baseline vs New Revenue by Risk Level (same style as right chart, numbers outside only)
+# LEFT: Baseline vs New Revenue by Risk Level 
 with left_col:
 
     rev_records = []
@@ -739,16 +739,10 @@ with left_col:
             "Baseline": "#d1d5db",
             "New": "#0284c7"
         },
-        title="Baseline vs New Revenue"
+        title="Baseline vs {main_strat.title()} Strategy"
     )
 
     # Same rules as right-side chart, but force labels OUTSIDE only
-    fig_rev_bar.update_traces(
-        text=df_rev_plot["Revenue"],
-        texttemplate="%{text:,.0f}",
-        textposition="outside",      # <- always outside
-        textfont=dict(color="black")
-    )
 
     fig_rev_bar.update_layout(
         bargap=0.35,
@@ -777,13 +771,13 @@ with right_col:
         new_rate = max(0.0, min(init_r * (1 + E * load), 1.0))
         new_n = int(pool * new_rate)
         
-        hist_d.append({"Risk Category": r, "Type": "Baseline", "number of accepting customer": baseline_metrics[r]["base"]})
-        hist_d.append({"Risk Category": r, "Type": "New", "number of accepting customer": new_n})
+        hist_d.append({"Risk": r, "Type": "Baseline", "Count": baseline_metrics[r]["base"]})
+        hist_d.append({"Risk": r, "Type": "New", "Count": new_n})
 
     fig_h = px.bar(
         pd.DataFrame(hist_d),
-        x="Risk",
-        y="Count",
+        x="Risk Category",
+        y="Number of Accepting Customer",
         color="Type",
         barmode="group",
         color_discrete_map={"Baseline": "#d1d5db", "New": "#0ea5e9"},
